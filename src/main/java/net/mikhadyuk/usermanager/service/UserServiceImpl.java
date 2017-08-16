@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
@@ -23,17 +25,31 @@ public class UserServiceImpl implements UserService {
     @Override
     public void blockUser(User user) {
         user.setBlocked(true);
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword())); //?????
         userDao.saveAndFlush(user);
     }
 
     @Override
-    public void removeUser(long id) {
-        userDao.delete(id);
+    public void blockUser(long userId) {
+        blockUser(findById(userId));
+    }
+
+    @Override
+    public void removeUser(long userId) {
+        userDao.delete(userId);
     }
 
     @Override
     public User findByUsername(String username) {
         return userDao.findByUsername(username);
+    }
+
+    @Override
+    public User findById(long userId) {
+        return userDao.findById(userId);
+    }
+
+    @Override
+    public List<User> findAllUsers() {
+        return userDao.findAll();
     }
 }
