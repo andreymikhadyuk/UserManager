@@ -40,6 +40,26 @@
 
             <button class="btn btn-lg btn-primary btn-block" type="submit">Log In</button>
             <h4 class="text-center"><a href="${contextPath}/registration">Create an account</a></h4>
+
+            <script src="//ulogin.ru/js/ulogin.js"></script>
+            <div id="uLogin" data-ulogin="display=panel;theme=classic;fields=first_name,last_name,email;providers=vkontakte,odnoklassniki,mailru,facebook;hidden=other;redirect_uri=;callback=preview;mobilebuttons=0;"></div>
+            <script>
+                function preview(token){
+                    $.getJSON("//ulogin.ru/token.php?host=" + encodeURIComponent(location.toString()) + "&token=" + token + "&callback=?", function(data){
+                        data = $.parseJSON(data.toString());
+                        if(!data.error){
+                            $.ajax({
+                                type: "GET",
+                                url: "/login/social",
+                                data: {
+                                    first_name : data.first_name,
+                                    email : data.email,
+                                    uid : data.uid } // parameters
+                            })
+                        }
+                    });
+                }
+            </script>
         </div>
 
     </form>

@@ -5,6 +5,9 @@ import net.mikhadyuk.usermanager.service.SecurityService;
 import net.mikhadyuk.usermanager.service.UserService;
 import net.mikhadyuk.usermanager.validator.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,13 +25,6 @@ public class UserController {
     @Autowired
     private UserValidator userValidator;
 
-//    @RequestMapping(value = "/registration", method = RequestMethod.GET)
-//    public String registration(Model model) {
-//        model.addAttribute("userForm", new User());
-//
-//        return "registration";
-//    }
-
     @RequestMapping(value = "/registration", method = RequestMethod.POST)
     public String registration(@ModelAttribute("userForm") User userForm, BindingResult bindingResult, Model model) {
         userValidator.validate(userForm, bindingResult);
@@ -42,6 +38,22 @@ public class UserController {
         securityService.autoLogin(userForm.getUsername(), userForm.getConfirmPassword());
 
         return "redirect:/user-list";
+    }
+
+    @RequestMapping(value = "/login/social", method = RequestMethod.GET)
+    public @ResponseBody
+    String login(@RequestParam("first_name") String firstName, @RequestParam("email") String email,
+                 @RequestParam("uid") String id, Model model) {
+        User user = new User();
+        user.setName(firstName);
+        user.setUsername(email);
+        user.setPassword(id.length() < 8 ? id += "12345678" : id);
+        user.setConfirmPassword(user.getPassword());
+
+        userService.save(user);
+
+        securityService.autoLogin(user.getUsername(), user.getConfirmPassword());
+        return "user-list";
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
@@ -65,7 +77,13 @@ public class UserController {
 
     @RequestMapping(value = {"/user-list/{userId}"})
     public String userList(@PathVariable Long userId, @RequestParam("button") String button, Model model) {
-        System.out.println(userId);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String name = auth.getName(); //get logged in username
+        User currentUser = userService.findByUsername(name);
+        if (currentUser.isBlocked()) {
+            return "/login";
+        }
+
         if (button.equals("deleteButton")) {
             userService.removeUser(userId);
         } else {
