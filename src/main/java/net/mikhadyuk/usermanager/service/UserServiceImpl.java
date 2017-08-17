@@ -23,14 +23,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void blockUser(User user) {
-        user.setBlocked(true);
+    public void blockOrUnblockUser(User user) {
+        user.setBlocked(!user.isBlocked());
         userDao.saveAndFlush(user);
     }
 
     @Override
-    public void blockUser(long userId) {
-        blockUser(findById(userId));
+    public void blockOrUnblockUser(long userId) {
+        blockOrUnblockUser(findById(userId));
     }
 
     @Override

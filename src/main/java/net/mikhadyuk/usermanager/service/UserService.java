@@ -7,9 +7,9 @@ import java.util.List;
 public interface UserService {
     void save(User user);
 
-    void blockUser(User user);
+    void blockOrUnblockUser(User user);
 
-    void blockUser(long userId);
+    void blockOrUnblockUser(long userId);
 
     void removeUser(long userId);
 

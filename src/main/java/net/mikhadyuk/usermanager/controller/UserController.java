@@ -5,7 +5,6 @@ import net.mikhadyuk.usermanager.service.SecurityService;
 import net.mikhadyuk.usermanager.service.UserService;
 import net.mikhadyuk.usermanager.validator.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -50,6 +49,8 @@ public class UserController {
         user.setPassword(id.length() < 8 ? id += "12345678" : id);
         user.setConfirmPassword(user.getPassword());
 
+        System.out.println(user);
+
         userService.save(user);
 
         securityService.autoLogin(user.getUsername(), user.getConfirmPassword());
@@ -87,7 +88,7 @@ public class UserController {
         if (button.equals("deleteButton")) {
             userService.removeUser(userId);
         } else {
-            userService.blockUser(userId);
+            userService.blockOrUnblockUser(userId);
         }
         model.addAttribute("userList", userService.findAllUsers());
         return "user-list";
