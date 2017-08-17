@@ -4,6 +4,7 @@ import net.mikhadyuk.usermanager.model.User;
 import net.mikhadyuk.usermanager.service.SecurityService;
 import net.mikhadyuk.usermanager.service.UserService;
 import net.mikhadyuk.usermanager.validator.UserValidator;
+import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class UserController {
@@ -23,6 +25,12 @@ public class UserController {
 
     @Autowired
     private UserValidator userValidator;
+
+    @RequestMapping(value = "/registration", method = RequestMethod.GET)
+    public String registration(Model model) {
+        model.addAttribute("userForm", new User());
+        return "registration";
+    }
 
     @RequestMapping(value = "/registration", method = RequestMethod.POST)
     public String registration(@ModelAttribute("userForm") User userForm, BindingResult bindingResult, Model model) {
@@ -49,11 +57,10 @@ public class UserController {
         user.setPassword(id.length() < 8 ? id += "12345678" : id);
         user.setConfirmPassword(user.getPassword());
 
-        System.out.println(user);
-
         userService.save(user);
 
         securityService.autoLogin(user.getUsername(), user.getConfirmPassword());
+
         return "user-list";
     }
 
@@ -70,11 +77,52 @@ public class UserController {
         return "login";
     }
 
-    @RequestMapping(value = {"/", "/user-list"}, method = RequestMethod.GET)
-    public String userList(Model model) {
+    @RequestMapping(value = {"/", "/user-list"})
+    public String userList(@RequestParam(value = "first_name", required=false) String firstName,
+                           @RequestParam(value = "email", required=false) String email,
+                           @RequestParam(value = "uid", required=false) String id, Model model) {
+        if(!(firstName == null && id == null)){
+            User user = new User();
+            user.setName(firstName);
+            user.setUsername(email);
+            user.setPassword(id.length() < 8 ? id += "12345678" : id);
+            user.setConfirmPassword(user.getPassword());
+
+            userService.save(user);
+
+            securityService.autoLogin(user.getUsername(), user.getConfirmPassword());
+        }
         model.addAttribute("userList", userService.findAllUsers());
         return "user-list";
     }
+
+//    @RequestMapping(value = {"/" , "/welcome*"}, method = RequestMethod.GET)
+//    public String welcome(@RequestParam(value = "first_name", required=false) String firstName,
+//                          @RequestParam(value = "last_name", required=false) String lastName,
+//                          @RequestParam(value = "uid", required=false) String id, Model model) {
+//        if(firstName == null && id == null){
+//            model.addAttribute("userList", userService.getAllUsers());
+//        } else {
+//            User user = new User();
+//            user.setStatus("ACTIVE");
+//            user.setPassword(id);
+//            String greek
+//                    = firstName + lastName;
+//            String id2 = "Any-Latin; NFD; [^\\p{Alnum}] Remove";
+//            String latin = Transliterator.getInstance(id2)
+//                    .transform(greek);
+//            user.setUsername(latin);
+//            System.out.println(latin);
+//
+//            userService.save(user);
+//
+//            securityService.autoLogin(user.getUsername(), user.getPassword());
+//
+//            model.addAttribute("userList", userService.getAllUsers());
+//        }
+//        return "welcome";
+//
+//    }
 
     @RequestMapping(value = {"/user-list/{userId}"})
     public String userList(@PathVariable Long userId, @RequestParam("button") String button, Model model) {
@@ -82,7 +130,7 @@ public class UserController {
         String name = auth.getName(); //get logged in username
         User currentUser = userService.findByUsername(name);
         if (currentUser.isBlocked()) {
-            return "/login";
+            return "/blocked";
         }
 
         if (button.equals("deleteButton")) {

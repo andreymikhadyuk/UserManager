@@ -14,12 +14,24 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Welcome</title>
+    <title>User list</title>
 
     <link href="${contextPath}/resources/css/bootstrap.min.css" rel="stylesheet">
     <link href="${contextPath}/resources/css/common.css" rel="stylesheet">
 </head>
 <body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <button class="form-logout" type = "submit" onclick="document.forms['logoutForm'].submit()">
+                    Logout
+                </button>
+            </ul>
+        </div>
+    </div>
+</nav>
 
 <div class="container">
 
@@ -28,19 +40,17 @@
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         </form>
 
-        <button class="form-logout" type = "submit" onclick="document.forms['logoutForm'].submit()">Logout</button>
-
         <table class = "table">
             <c:forEach items="${userList}" var="user">
                 <c:if test="${pageContext.request.userPrincipal.name != user.username}">
                     <tr class="th">
-                        <td class="th, text-center"><c:out value = "${user.username}"/> </td>
-                        <td class="th, text-center"><c:out value = "${user.name}"/> </td>
+                        <td class="th, text-left"><c:out value = "${user.username}"/> </td>
+                        <td class="th, text-left"><c:out value = "${user.name}"/> </td>
                         <td class="th, text-center">
                             <form action="/user-list/${user.id}">
                                 <c:choose>
                                     <c:when test="${user.blocked == true}">
-                                        <button class="table-button unblock" type="submit" name="button" value="blockButton">
+                                        <button class="table-button block" type="submit" name="button" value="blockButton">
                                             Unblock
                                         </button>
                                     </c:when>

@@ -26,6 +26,15 @@
 
 <body>
 
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+            </ul>
+        </div>
+    </div>
+</nav>
+
 <div class="container">
 
     <form:form method="POST" modelAttribute="userForm" class="form-signin">
@@ -33,7 +42,7 @@
         <spring:bind path="name">
             <div class="form-group ${status.error ? 'has-error' : ''}">
                 <form:input type="text" path="name" class="form-control"
-                            placeholder="First name"></form:input>
+                            placeholder="First name" autofocus="true"></form:input>
                 <form:errors path="name"></form:errors>
             </div>
         </spring:bind>
@@ -41,7 +50,7 @@
         <spring:bind path="username">
             <div class="form-group ${status.error ? 'has-error' : ''}">
                 <form:input type="text" path="username" class="form-control" placeholder="Username"
-                            autofocus="true"></form:input>
+                            ></form:input>
                 <form:errors path="username"></form:errors>
             </div>
         </spring:bind>

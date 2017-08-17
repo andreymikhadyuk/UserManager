@@ -3740,7 +3740,8 @@ a.btn.disabled, fieldset[disabled] a.btn {
 
 .btn-block {
     display: block;
-    width: 100%
+    width: 100%;
+    margin-bottom: 10px;
 }
 
 .btn-block + .btn-block {
@@ -4957,8 +4958,9 @@ select[multiple].input-group-sm > .form-control, select[multiple].input-group-sm
 }
 
 .navbar-inverse {
-    background-color: #222;
-    border-color: #080808
+    /*background-color: #222;*/
+    background-color: #81C784;
+    border-color: #81C784
 }
 
 .navbar-inverse .navbar-brand {
