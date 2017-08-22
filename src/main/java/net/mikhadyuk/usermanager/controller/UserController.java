@@ -1,10 +1,10 @@
 package net.mikhadyuk.usermanager.controller;
 
 import net.mikhadyuk.usermanager.model.User;
+import net.mikhadyuk.usermanager.service.SearchService;
 import net.mikhadyuk.usermanager.service.SecurityService;
 import net.mikhadyuk.usermanager.service.UserService;
 import net.mikhadyuk.usermanager.validator.UserValidator;
-import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,13 +12,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private SearchService searchService;
 
     @Autowired
     private SecurityService securityService;
@@ -124,22 +126,34 @@ public class UserController {
 //
 //    }
 
-    @RequestMapping(value = {"/user-list/{userId}"})
-    public String userList(@PathVariable Long userId, @RequestParam("button") String button, Model model) {
+    @RequestMapping(value = "/user-list/change")
+    public String userList(@RequestParam("personId") Long[] userIds, @RequestParam("button") String button, Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String name = auth.getName(); //get logged in username
         User currentUser = userService.findByUsername(name);
         if (currentUser.isBlocked()) {
-            return "/blocked";
+            return "blocked";
         }
 
         if (button.equals("deleteButton")) {
-            userService.removeUser(userId);
+            for (long userId : userIds)
+                userService.removeUser(userId);
         } else {
-            userService.blockOrUnblockUser(userId);
+            for (long userId : userIds)
+                userService.blockOrUnblockUser(userId);
         }
         model.addAttribute("userList", userService.findAllUsers());
         return "user-list";
+    }
+
+    @RequestMapping(value = {"/user-list/search"})
+    public String Search(@RequestParam(value="value", required = false) String value, Model model ) {
+        if (value == null || value.trim().isEmpty() ) {
+            return "search";
+        }
+
+        model.addAttribute("products", searchService.getRequestedProductsFromBelchip(value));
+        return "search";
     }
 }
 

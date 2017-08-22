@@ -105,7 +105,7 @@ table {
     border:1px solid #d3d3d3;
     background:#fefefe;
     width:70%;
-    margin:5% auto 0;
+    margin:2% auto 0;
     -moz-border-radius:5px; /* FF1+ */
     -webkit-border-radius:5px; /* Saf3-4 */
     border-radius:5px;
@@ -222,13 +222,16 @@ tr:last-child td.last {
     background: #00aac9;
 }
 
+.margin-to-table {
+    margin: 2% auto 10px;
+}
+
 .table-button {
     display: inline-block;
     -webkit-box-sizing: content-box;
     -moz-box-sizing: content-box;
     box-sizing: content-box;
     cursor: pointer;
-    width: 55px;
     text-align: center;
     padding: 0 0.7em;
     border: 1px solid rgba(211,211,211,1);
