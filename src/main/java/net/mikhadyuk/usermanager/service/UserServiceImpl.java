@@ -19,13 +19,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public void save(User user) {
         User userInDB = userDao.findByUsername(user.getUsername());
-        if (userInDB == null) {
-            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-            userDao.saveAndFlush(user);
-        } else {
-            user = userInDB;
-            user.setConfirmPassword(user.getPassword());
+        if (userInDB != null) {
+            userDao.delete(userInDB.getId());
         }
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        userDao.saveAndFlush(user);
     }
 
     @Override

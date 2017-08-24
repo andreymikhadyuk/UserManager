@@ -5,5 +5,9 @@ import net.mikhadyuk.usermanager.model.Product;
 import java.util.List;
 
 public interface SearchService {
-    List<Product> getRequestedProductsFromBelchip(String request);
+    void initBelchip(String request);
+    List<Product> getNextBelchipProducts();
+
+    void initChipdip(String request);
+    List<Product> getNextChipdipProducts();
 }

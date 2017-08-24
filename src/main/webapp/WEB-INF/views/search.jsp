@@ -2,6 +2,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page contentType="text/html;charset=utf-8" %>
+<script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
+
 
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 
@@ -14,7 +16,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Look for something</title>
+    <title>Look for goods</title>
 
     <link href="${contextPath}/resources/css/bootstrap.min.css" rel="stylesheet">
     <link href="${contextPath}/resources/css/common.css" rel="stylesheet">
@@ -34,11 +36,11 @@
     <div class="container">
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li>
-                    <button class="form-logout" type = "submit" onclick="document.forms['logoutForm'].submit()">
-                        Logout
+                <form action="${contextPath}/login">
+                    <button class="form-logout" type="submit" data-target=".navbar-collapse">
+                        Back
                     </button>
-                </li>
+                </form>
             </ul>
         </div>
     </div>
@@ -55,19 +57,23 @@
         </ul>
     </form>
     <c:if test="${products != null}">
-        <table class = "table">
-            <form id ="searchs" >
+        <table class="table">
+            <form id="searchs">
                 <c:forEach items="${products}" var="product">
                     <tr class="th">
-                        <td class="th">
+                        <td class="th" style="width: 160px">
                             <a href="${product.url}">
                                 <img height="120" width="120" src="${product.imageUrl}"/>
                             </a>
                         </td>
                         <td class="th, text-left">
+                            Name:
                             <a href="${product.url}">
                                 <c:out value="${product.name}"></c:out>
                             </a>
+                            <br/>
+                            Price:
+                            <c:out value="${product.price}"></c:out>
                         </td>
                     </tr>
                 </c:forEach>
@@ -76,6 +82,7 @@
     </c:if>
 </div>
 <!-- /container -->
+<script src="${contextPath}/resources/js/scroll.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script src="${contextPath}/resources/js/bootstrap.min.js"></script>
 </body>

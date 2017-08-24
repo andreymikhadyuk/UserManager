@@ -1,5 +1,6 @@
 package net.mikhadyuk.usermanager.controller;
 
+import net.mikhadyuk.usermanager.model.Product;
 import net.mikhadyuk.usermanager.model.User;
 import net.mikhadyuk.usermanager.service.SearchService;
 import net.mikhadyuk.usermanager.service.SecurityService;
@@ -12,6 +13,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 @Controller
 public class UserController {
@@ -147,13 +155,58 @@ public class UserController {
     }
 
     @RequestMapping(value = {"/user-list/search"})
-    public String Search(@RequestParam(value="value", required = false) String value, Model model ) {
+    public String Search(@RequestParam(value="value", required = false) String value, Model model) {
         if (value == null || value.trim().isEmpty() ) {
             return "search";
         }
 
-        model.addAttribute("products", searchService.getRequestedProductsFromBelchip(value));
+        searchService.initBelchip(value);
+        searchService.initChipdip(value);
+
+        List<Product> products = new ArrayList<>();
+        products.addAll(searchService.getNextChipdipProducts());
+        if (products.size() < 7) {
+            products.addAll(searchService.getNextBelchipProducts());
+            Collections.shuffle(products);
+        }
+
+        model.addAttribute("products", products);
         return "search";
+    }
+
+    @RequestMapping(value = {"/search"})
+    @ResponseBody
+    public String scroll()
+    {
+        List<Product> products = new ArrayList<>();
+        products.addAll(searchService.getNextBelchipProducts());
+        products.addAll(searchService.getNextChipdipProducts());
+        Collections.shuffle(products);
+
+        String pages = "";
+        if(!products.isEmpty()) {
+            for (Product product : products) {
+                pages += "<tr class=\"th\"> <td class=\"th\" style=\"width: 160px\"> " +
+                        "<a href=\"" + product.getUrl() + "\"> <img height=\"120\" width=\"120\" " +
+                        "src=\"" + product.getImageUrl() + "\"/> </a>" +
+                        "</td> <td class=\"th, text-left\"> " +
+                        "Name: <a href=\"" + product.getUrl() + "\">" +
+                        encodeString(product.getName()) + " </a> <br/> Price: " +
+                        encodeString(product.getPrice()) + " </td> </tr>";
+
+            }
+            return pages;
+        }
+        return null;
+    }
+
+    private String encodeString(String string) {
+        try {
+            return URLEncoder.encode(string, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return string;
     }
 }
 

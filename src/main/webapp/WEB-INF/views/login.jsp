@@ -30,11 +30,11 @@
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li>
-                <form action = "${contextPath}/registration">
-                    <button class="form-logout" type = "submit" data-target=".navbar-collapse">
-                        Registration
-                    </button>
-                </form>
+                    <form action = "${contextPath}/registration">
+                        <button class="form-logout" type = "submit" data-target=".navbar-collapse">
+                            Registration
+                        </button>
+                    </form>
                 </li>
                 <li>
                     <form action="/user-list/search" style="margin-left: 10px">
